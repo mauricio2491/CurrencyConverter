@@ -1,4 +1,4 @@
-namespace CurrencyConverter.Models;
+namespace CurrencyConverter.Core.Models;
 
 /// <summary>
 /// A currency the user can pick, e.g. Code = "MXN", Name = "Mexican Peso".

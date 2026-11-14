@@ -1,7 +1,7 @@
-using CurrencyConverter.ViewModels;
+using CurrencyConverter.Core.ViewModels;
 using Wpf.Ui.Controls;
 
-namespace CurrencyConverter.Views;
+namespace CurrencyConverter.Fluent.Views;
 
 /// <summary>
 /// Code-behind stays empty on purpose (MVVM): the only thing it does is receive the

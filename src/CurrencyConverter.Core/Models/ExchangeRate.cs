@@ -1,4 +1,4 @@
-namespace CurrencyConverter.Models;
+namespace CurrencyConverter.Core.Models;
 
 /// <summary>
 /// How many units of <see cref="Quote"/> you get for 1 unit of <see cref="Base"/> on <see cref="Date"/>.

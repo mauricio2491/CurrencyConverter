@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Windows 11 look (Fluent Design) using the WPF-UI library. -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
@@ -9,11 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="11.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="11.0.0" />
     <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CurrencyConverter.Core\CurrencyConverter.Core.csproj" />
   </ItemGroup>
 
 </Project>

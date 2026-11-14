@@ -1,4 +1,4 @@
-namespace CurrencyConverter.Services;
+namespace CurrencyConverter.Core.Services;
 
 /// <summary>What went wrong, so the ViewModel can show the right friendly message.</summary>
 public enum ExchangeRateErrorKind

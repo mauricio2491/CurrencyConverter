@@ -1,8 +1,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="clr-namespace:CurrencyConverter.Converters"
-    xmlns:models="clr-namespace:CurrencyConverter.Models">
+    xmlns:converters="clr-namespace:CurrencyConverter.Fluent.Converters"
+    xmlns:models="clr-namespace:CurrencyConverter.Core.Models;assembly=CurrencyConverter.Core">
 
     <!--
         Reusable resources for the whole app. Colors come from WPF-UI's theme brushes

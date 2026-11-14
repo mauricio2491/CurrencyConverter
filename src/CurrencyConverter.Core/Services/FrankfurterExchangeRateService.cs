@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using CurrencyConverter.Models;
-using CurrencyConverter.Models.Dtos;
+using CurrencyConverter.Core.Models;
+using CurrencyConverter.Core.Models.Dtos;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace CurrencyConverter.Services;
+namespace CurrencyConverter.Core.Services;
 
 /// <summary>
 /// Real implementation backed by the free Frankfurter API (https://frankfurter.dev, no API key).

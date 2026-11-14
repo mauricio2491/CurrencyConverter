@@ -1,6 +1,6 @@
-using CurrencyConverter.Models;
+using CurrencyConverter.Core.Models;
 
-namespace CurrencyConverter.Services;
+namespace CurrencyConverter.Core.Services;
 
 /// <summary>
 /// Offline implementation with hard-coded data. Useful to develop the UI without network,

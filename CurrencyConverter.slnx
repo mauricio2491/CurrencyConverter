@@ -1,3 +1,7 @@
 <Solution>
-  <Project Path="CurrencyConverter.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/CurrencyConverter.Core/CurrencyConverter.Core.csproj" />
+    <Project Path="src/CurrencyConverter.Fluent/CurrencyConverter.Fluent.csproj" />
+    <Project Path="src/CurrencyConverter.Classic/CurrencyConverter.Classic.csproj" />
+  </Folder>
 </Solution>

@@ -1,11 +1,13 @@
 ﻿using System.Windows;
-using CurrencyConverter.Services;
-using CurrencyConverter.ViewModels;
-using CurrencyConverter.Views;
+using CurrencyConverter.Core;
+using CurrencyConverter.Core.Services;
+using CurrencyConverter.Core.ViewModels;
+using CurrencyConverter.Fluent.Services;
+using CurrencyConverter.Fluent.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Wpf.Ui.Appearance;
 
-namespace CurrencyConverter;
+namespace CurrencyConverter.Fluent;
 
 /// <summary>
 /// Composition root: the one place where we decide which concrete class implements
@@ -44,24 +46,11 @@ public partial class App : Application
     {
         var services = new ServiceCollection();
 
-        if (useFakeService)
-        {
-            services.AddSingleton<IExchangeRateService, FakeExchangeRateService>();
-        }
-        else
-        {
-            // Named HttpClient managed by IHttpClientFactory (pooled handlers, no socket exhaustion).
-            services.AddHttpClient(FrankfurterExchangeRateService.HttpClientName, client =>
-            {
-                client.BaseAddress = new Uri("https://api.frankfurter.dev/");
-                client.Timeout = TimeSpan.FromSeconds(10);
-            });
-            services.AddMemoryCache();
-            services.AddSingleton<IExchangeRateService, FrankfurterExchangeRateService>();
-        }
+        // Shared by both apps: exchange rate service, HttpClient, cache and MainViewModel.
+        services.AddCurrencyConverterCore(useFakeService);
 
+        // Specific to this app.
         services.AddSingleton<IThemeService, ThemeService>();
-        services.AddSingleton<MainViewModel>();
         services.AddSingleton<MainWindow>();
 
         return services.BuildServiceProvider();

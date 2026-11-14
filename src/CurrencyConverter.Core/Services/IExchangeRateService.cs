@@ -1,6 +1,6 @@
-using CurrencyConverter.Models;
+using CurrencyConverter.Core.Models;
 
-namespace CurrencyConverter.Services;
+namespace CurrencyConverter.Core.Services;
 
 /// <summary>
 /// Abstraction over "where exchange rates come from". The ViewModel depends on this

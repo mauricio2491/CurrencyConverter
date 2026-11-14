@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace CurrencyConverter.Models.Dtos;
+namespace CurrencyConverter.Core.Models.Dtos;
 
 // DTOs mirror the JSON exactly as Frankfurter returns it. They stay internal to the
 // service layer; the rest of the app only sees the clean domain models (Currency, ExchangeRate).

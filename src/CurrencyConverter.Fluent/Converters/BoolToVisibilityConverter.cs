@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace CurrencyConverter.Converters;
+namespace CurrencyConverter.Fluent.Converters;
 
 /// <summary>
 /// true → Visible, false → Collapsed (or the opposite when <see cref="IsInverted"/> is set).

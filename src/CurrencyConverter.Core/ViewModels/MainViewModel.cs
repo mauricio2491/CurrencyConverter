@@ -2,10 +2,10 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CurrencyConverter.Models;
-using CurrencyConverter.Services;
+using CurrencyConverter.Core.Models;
+using CurrencyConverter.Core.Services;
 
-namespace CurrencyConverter.ViewModels;
+namespace CurrencyConverter.Core.ViewModels;
 
 /// <summary>The four states the screen can be in. The View shows/hides sections based on it.</summary>
 public enum ViewState

@@ -1,0 +1,206 @@
+<Window
+    x:Class="CurrencyConverter.Classic.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:CurrencyConverter.Core.ViewModels;assembly=CurrencyConverter.Core"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=vm:MainViewModel, IsDesignTimeCreatable=False}"
+    Title="Currency Converter (Classic)"
+    Width="680"
+    Height="760"
+    MinWidth="520"
+    MinHeight="620"
+    WindowStartupLocation="CenterScreen"
+    Background="{DynamicResource WindowBackgroundBrush}"
+    Foreground="{DynamicResource TextPrimaryBrush}"
+    FontFamily="Segoe UI">
+
+    <!-- Same screen and same bindings as the Fluent window; only standard WPF controls. -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="600" Margin="32,24,32,32">
+
+            <!-- ===== Header ===== -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Style="{StaticResource PageTitleStyle}" Text="Currency Converter" />
+                    <TextBlock Style="{StaticResource SubtitleStyle}" Text="Convert between world currencies using official reference rates." />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    Style="{StaticResource SubtleButtonStyle}"
+                    Command="{Binding ToggleThemeCommand}"
+                    ToolTip="Switch between light and dark theme"
+                    AutomationProperties.Name="Toggle theme">
+                    <TextBlock Style="{StaticResource IconStyle}" FontSize="16" Text="&#xE793;" />
+                </Button>
+            </Grid>
+
+            <!-- ===== Input card ===== -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Amount" />
+                    <!-- Tag holds the placeholder text (see the TextBox template in Styles.xaml). -->
+                    <TextBox
+                        Tag="Enter an amount"
+                        Text="{Binding AmountText, UpdateSourceTrigger=PropertyChanged}"
+                        AutomationProperties.Name="Amount">
+                        <!-- Pressing Enter runs the same command as the Convert button. -->
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding ConvertCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <TextBlock
+                        Style="{StaticResource ValidationTextStyle}"
+                        Text="{Binding AmountError}"
+                        Visibility="{Binding AmountError, Converter={StaticResource NullOrEmptyToVisibilityConverter}}" />
+
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource FieldLabelStyle}" Text="From" />
+                            <ComboBox
+                                ItemsSource="{Binding Currencies}"
+                                SelectedItem="{Binding FromCurrency}"
+                                ItemTemplate="{StaticResource CurrencyItemTemplate}"
+                                TextSearch.TextPath="Code"
+                                AutomationProperties.Name="From currency" />
+                        </StackPanel>
+
+                        <Button
+                            Grid.Column="1"
+                            Margin="12,0"
+                            VerticalAlignment="Bottom"
+                            Command="{Binding SwapCurrenciesCommand}"
+                            ToolTip="Swap currencies"
+                            AutomationProperties.Name="Swap currencies">
+                            <TextBlock Style="{StaticResource IconStyle}" Text="&#xE8AB;" />
+                        </Button>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Style="{StaticResource FieldLabelStyle}" Text="To" />
+                            <ComboBox
+                                ItemsSource="{Binding Currencies}"
+                                SelectedItem="{Binding ToCurrency}"
+                                ItemTemplate="{StaticResource CurrencyItemTemplate}"
+                                TextSearch.TextPath="Code"
+                                AutomationProperties.Name="To currency" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Button
+                        Margin="0,24,0,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{Binding ConvertCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Convert" />
+                            <TextBlock Margin="8,0,0,0" Style="{StaticResource IconStyle}" FontSize="12" Text="&#xE72A;" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Loading ===== -->
+            <StackPanel
+                Margin="0,24,0,0"
+                HorizontalAlignment="Center"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ProgressBar Width="200" IsIndeterminate="True" />
+                <StackPanel Margin="0,10,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Style="{StaticResource BodySecondaryStyle}"
+                        Text="{Binding LoadingMessage}" />
+                    <Button
+                        Margin="12,0,0,0"
+                        Style="{StaticResource SubtleButtonStyle}"
+                        Content="Cancel"
+                        Command="{Binding ConvertCancelCommand}"
+                        Visibility="{Binding ConvertCommand.IsRunning, Converter={StaticResource BoolToVisibilityConverter}}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- ===== Result (animated when it appears) ===== -->
+            <Border
+                Margin="0,24,0,0"
+                Style="{StaticResource RevealOnShowStyle}"
+                Visibility="{Binding HasResult, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource BodySecondaryStyle}" Text="{Binding SourceAmountText}" />
+                        <TextBlock Style="{StaticResource ResultAmountStyle}" Text="{Binding ConvertedAmountText}" />
+                        <TextBlock
+                            Margin="0,12,0,0"
+                            Style="{StaticResource BodySecondaryStyle}"
+                            Text="{Binding RateText}" />
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            Style="{StaticResource CaptionStyle}"
+                            Text="{Binding RateDateText}" />
+                    </StackPanel>
+                </Border>
+            </Border>
+
+            <!-- ===== Error ===== -->
+            <Border
+                Margin="0,24,0,0"
+                Style="{StaticResource RevealOnShowStyle}"
+                Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel>
+                    <Border Style="{StaticResource ErrorPanelStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Margin="0,2,12,0"
+                                VerticalAlignment="Top"
+                                Foreground="{DynamicResource ErrorBrush}"
+                                Style="{StaticResource IconStyle}"
+                                Text="&#xE783;" />
+                            <StackPanel Grid.Column="1">
+                                <TextBlock FontWeight="SemiBold" Text="{Binding ErrorTitle}" />
+                                <TextBlock
+                                    Margin="0,2,0,0"
+                                    Style="{StaticResource BodySecondaryStyle}"
+                                    Text="{Binding ErrorMessage}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Button
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Left"
+                        Command="{Binding RetryCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconStyle}" FontSize="12" Text="&#xE72C;" />
+                            <TextBlock Margin="8,0,0,0" Text="Try again" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Footnote ===== -->
+            <TextBlock
+                Margin="0,32,0,0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                Style="{StaticResource CaptionStyle}"
+                Text="Rates are updated once a day and are not real-time. Source: Frankfurter (frankfurter.dev)." />
+        </StackPanel>
+    </ScrollViewer>
+</Window>

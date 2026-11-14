@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace CurrencyConverter.Converters;
+namespace CurrencyConverter.Fluent.Converters;
 
 /// <summary>
 /// Collapsed when the value is null or an empty string, Visible otherwise.

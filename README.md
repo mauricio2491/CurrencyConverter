@@ -1,151 +1,153 @@
 # CurrencyConverter
 
-Aplicación de escritorio **WPF** para convertir montos entre monedas usando la API gratuita de
-[Frankfurter](https://frankfurter.dev) (sin API key). Es un proyecto de aprendizaje de WPF con
-arquitectura **MVVM estricta** e inyección de dependencias.
+**English** | [Español](README.es.md)
 
-La misma app existe en **dos versiones visuales** que comparten toda la lógica:
+A **WPF** desktop app that converts amounts between currencies using the free
+[Frankfurter](https://frankfurter.dev) API (no API key). It is a WPF learning project built with
+**strict MVVM** and dependency injection.
 
-| App | Aspecto |
+The same app exists in **two visual versions** that share all of their logic:
+
+| App | Look |
 |---|---|
-| **CurrencyConverter.Fluent** | Estilo Windows 11 con la librería [WPF-UI](https://github.com/lepoco/wpfui): `FluentWindow`, Mica, barra de título integrada |
-| **CurrencyConverter.Classic** | WPF puro, sin librerías de UI: estilos, plantillas y temas propios |
+| **CurrencyConverter.Fluent** | Windows 11 style with the [WPF-UI](https://github.com/lepoco/wpfui) library: `FluentWindow`, Mica, integrated title bar |
+| **CurrencyConverter.Classic** | Plain WPF, no UI libraries: custom styles, templates and themes |
 
-Ambas usan exactamente el mismo `MainViewModel`: solo cambia la vista.
+Both use exactly the same `MainViewModel`: only the view changes.
 
-> Las tasas de Frankfurter son **diarias** (tasas de referencia), no en tiempo real.
+> Frankfurter rates are **daily** reference rates, not real-time.
 
-## Funcionalidad
+## Features
 
-- Selección de moneda de origen y destino en dos `ComboBox`, con formato `MXN - Mexican Peso`.
-- Campo de monto con validación (solo números positivos) y mensaje de error bajo el campo.
-- Botón **Convertir** y botón **⇄** para intercambiar origen y destino.
-- Resultado grande y destacado, la tasa usada (`1 MXN = 0.0545 USD`) y la fecha de la tasa.
-- Estados claros en la UI: cargando, error de red / timeout, moneda inválida y servicio no disponible.
-- Tema claro/oscuro que sigue al sistema, con botón para alternarlo manualmente.
+- Source and target currency selection in two `ComboBox`es, formatted as `MXN - Mexican Peso`.
+- Amount field with validation (positive numbers only) and an error message below it.
+- **Convert** button and a **⇄** button to swap source and target.
+- Large, highlighted result, the rate used (`1 MXN = 0.0545 USD`) and the rate date.
+- Clear UI states: loading, network error / timeout, invalid currency and service unavailable.
+- Light/dark theme that follows the system, with a button to toggle it manually.
 
-## Tecnologías
+## Tech stack
 
-| Área | Tecnología |
+| Area | Technology |
 |---|---|
 | Framework | .NET 10, WPF, C# |
 | MVVM | [CommunityToolkit.Mvvm](https://www.nuget.org/packages/CommunityToolkit.Mvvm) (`[ObservableProperty]`, `[RelayCommand]`) |
 | DI | Microsoft.Extensions.DependencyInjection |
 | HTTP | `IHttpClientFactory` (Microsoft.Extensions.Http) + `System.Text.Json` |
 | Cache | Microsoft.Extensions.Caching.Memory (`IMemoryCache`) |
-| UI | WPF-UI (solo en la versión Fluent) |
+| UI | WPF-UI (Fluent version only) |
 
-## Arquitectura
+## Architecture
 
 ```
 CurrencyConverter/
 ├── CurrencyConverter.slnx
 └── src/
-    ├── CurrencyConverter.Core/              Biblioteca .NET pura (net10.0, sin WPF)
+    ├── CurrencyConverter.Core/              Plain .NET library (net10.0, no WPF)
     │   ├── Models/
-    │   │   ├── Currency.cs                  record Code + Name, con DisplayName "MXN - Mexican Peso"
+    │   │   ├── Currency.cs                  record Code + Name, with DisplayName "MXN - Mexican Peso"
     │   │   ├── ExchangeRate.cs              record Base, Quote, Rate (decimal), Date
-    │   │   └── Dtos/FrankfurterDtos.cs      Forma exacta del JSON de la API
+    │   │   └── Dtos/FrankfurterDtos.cs      Exact shape of the API's JSON
     │   ├── Services/
-    │   │   ├── IExchangeRateService.cs           Contrato: monedas y tasa de un par
-    │   │   ├── FrankfurterExchangeRateService.cs Implementación real (HTTP + cache)
-    │   │   ├── FakeExchangeRateService.cs        Implementación falsa para trabajar sin red
-    │   │   ├── ExchangeRateException.cs          Errores tipados (red, timeout, moneda inválida…)
-    │   │   └── IThemeService.cs                  Contrato para alternar el tema (cada app lo implementa)
-    │   ├── ViewModels/MainViewModel.cs      Estado de la pantalla, validación y comandos
-    │   └── ServiceCollectionExtensions.cs   AddCurrencyConverterCore(): registros de DI compartidos
+    │   │   ├── IExchangeRateService.cs           Contract: currencies and the rate of a pair
+    │   │   ├── FrankfurterExchangeRateService.cs Real implementation (HTTP + cache)
+    │   │   ├── FakeExchangeRateService.cs        Fake implementation to work offline
+    │   │   ├── ExchangeRateException.cs          Typed errors (network, timeout, invalid currency…)
+    │   │   └── IThemeService.cs                  Contract to toggle the theme (each app implements it)
+    │   ├── ViewModels/MainViewModel.cs      Screen state, validation and commands
+    │   └── ServiceCollectionExtensions.cs   AddCurrencyConverterCore(): shared DI registrations
     │
-    ├── CurrencyConverter.Fluent/            App con WPF-UI (net10.0-windows)
-    │   ├── App.xaml(.cs)                    Composition root + diccionarios de tema de WPF-UI
-    │   ├── Services/ThemeService.cs         Tema con ApplicationThemeManager de WPF-UI
+    ├── CurrencyConverter.Fluent/            App with WPF-UI (net10.0-windows)
+    │   ├── App.xaml(.cs)                    Composition root + WPF-UI theme dictionaries
+    │   ├── Services/ThemeService.cs         Theme via WPF-UI's ApplicationThemeManager
     │   ├── Views/MainWindow.xaml(.cs)       FluentWindow, ui:Card, ui:InfoBar, ui:ProgressRing…
     │   ├── Converters/                      BoolToVisibility, NullOrEmptyToVisibility
-    │   └── Resources/Styles.xaml            Tipografía, animación y DataTemplate
+    │   └── Resources/Styles.xaml            Typography, animation and DataTemplate
     │
-    └── CurrencyConverter.Classic/           App con WPF puro (net10.0-windows)
-        ├── App.xaml(.cs)                    Composition root + diccionario de tema propio
-        ├── Themes/Light.xaml, Dark.xaml     Mismas claves de pinceles, distintos colores
-        ├── Services/ThemeService.cs         Intercambia Light/Dark y sigue el tema de Windows
-        ├── Views/MainWindow.xaml(.cs)       Window estándar con los mismos bindings
+    └── CurrencyConverter.Classic/           App with plain WPF (net10.0-windows)
+        ├── App.xaml(.cs)                    Composition root + our own theme dictionary
+        ├── Themes/Light.xaml, Dark.xaml     Same brush keys, different colors
+        ├── Services/ThemeService.cs         Swaps Light/Dark and follows the Windows theme
+        ├── Views/MainWindow.xaml(.cs)       Standard Window with the same bindings
         ├── Converters/                      BoolToVisibility, NullOrEmptyToVisibility
-        └── Resources/Styles.xaml            ControlTemplates de Button, TextBox, ComboBox…
+        └── Resources/Styles.xaml            ControlTemplates for Button, TextBox, ComboBox…
 ```
 
-### Decisiones clave
+### Key decisions
 
-- **MVVM estricto**: la vista no contiene lógica; todo se comunica por *binding* y comandos.
-  El ViewModel expone un `ViewState` (`Idle`, `Loading`, `Success`, `Error`) y la vista muestra
-  u oculta secciones con converters. El code-behind de las ventanas solo asigna el `DataContext`.
-- **Core sin WPF**: modelos, servicios y ViewModel no dependen de ninguna librería de UI, por
-  eso las dos apps los reutilizan tal cual. Los converters sí son de WPF (`Visibility`), así
-  que cada app tiene su copia.
-- **Abstracciones**: el ViewModel depende de `IExchangeRateService` (API real o falsa) y de
-  `IThemeService` (WPF-UI o diccionarios propios), nunca de las clases concretas.
-- **`decimal` para dinero**, nunca `double`, para evitar errores de redondeo binario.
-- **`IHttpClientFactory`** con un cliente con nombre (`BaseAddress` y timeout de 10 s) para evitar
-  agotamiento de sockets.
-- **Manejo de errores**: `HttpRequestException`, timeouts y JSON inválido se traducen a
-  `ExchangeRateException` con un tipo de error; la cancelación del usuario se propaga como
-  `OperationCanceledException` (convención de .NET). Los comandos async usan `CancellationToken`.
-- **Cache en memoria**: lista de monedas por 1 hora y cada tasa por 10 minutos.
+- **Strict MVVM**: the view holds no logic; everything goes through *bindings* and commands.
+  The ViewModel exposes a `ViewState` (`Idle`, `Loading`, `Success`, `Error`) and the view shows
+  or hides sections with converters. The windows' code-behind only sets the `DataContext`.
+- **Core without WPF**: models, services and the ViewModel depend on no UI library, which is why
+  both apps reuse them as they are. Converters are WPF types (`Visibility`), so each app has its
+  own copy.
+- **Abstractions**: the ViewModel depends on `IExchangeRateService` (real or fake API) and on
+  `IThemeService` (WPF-UI or our own dictionaries), never on the concrete classes.
+- **`decimal` for money**, never `double`, to avoid binary rounding errors.
+- **`IHttpClientFactory`** with a named client (`BaseAddress` and a 10 s timeout) to avoid
+  socket exhaustion.
+- **Error handling**: `HttpRequestException`, timeouts and invalid JSON are translated into an
+  `ExchangeRateException` with an error kind; user cancellation propagates as
+  `OperationCanceledException` (the .NET convention). Async commands use `CancellationToken`.
+- **In-memory cache**: the currency list for 1 hour and each rate for 10 minutes.
 
-### Cómo funciona el tema en la versión Classic
+### How theming works in the Classic version
 
-`Themes/Light.xaml` y `Themes/Dark.xaml` definen los mismos pinceles (`WindowBackgroundBrush`,
-`TextPrimaryBrush`, `AccentBrush`…). `App.xaml` carga uno de ellos y todos los estilos los usan
-con `DynamicResource`. Para cambiar de tema, `ThemeService` reemplaza ese diccionario en
-`Application.Resources.MergedDictionaries` y la interfaz se repinta sola. Con `StaticResource`
-esto no funcionaría, porque el valor se lee una sola vez al cargar.
+`Themes/Light.xaml` and `Themes/Dark.xaml` define the same brushes (`WindowBackgroundBrush`,
+`TextPrimaryBrush`, `AccentBrush`…). `App.xaml` loads one of them and every style uses them
+through `DynamicResource`. To switch themes, `ThemeService` replaces that dictionary in
+`Application.Resources.MergedDictionaries` and the UI repaints itself. This would not work with
+`StaticResource`, because its value is read only once at load time.
 
-El tema inicial se lee del registro de Windows (`AppsUseLightTheme`) y se actualiza cuando
-cambia, escuchando `SystemEvents.UserPreferenceChanged`.
+The initial theme is read from the Windows registry (`AppsUseLightTheme`) and updated when it
+changes, by listening to `SystemEvents.UserPreferenceChanged`.
 
-## API de Frankfurter
+## Frankfurter API
 
-| Uso | Endpoint |
+| Use | Endpoint |
 |---|---|
-| Lista de monedas | `GET https://api.frankfurter.dev/v2/currencies` |
-| Tasa de un par | `GET https://api.frankfurter.dev/v2/rate/{base}/{quote}` |
+| Currency list | `GET https://api.frankfurter.dev/v2/currencies` |
+| Rate of a pair | `GET https://api.frankfurter.dev/v2/rate/{base}/{quote}` |
 
-Ejemplo de respuesta de tasa:
+Sample rate response:
 
 ```json
 { "date": "2026-11-13", "base": "CRC", "quote": "USD", "rate": 0.0022157 }
 ```
 
-## Cómo ejecutar
+## How to run
 
-Requisitos: Windows 10/11 y el SDK de .NET 10.
+Requirements: Windows 10/11 and the .NET 10 SDK.
 
 ```bash
 dotnet build
 
-# Versión Fluent (WPF-UI)
+# Fluent version (WPF-UI)
 dotnet run --project src/CurrencyConverter.Fluent
-dotnet run --project src/CurrencyConverter.Fluent -- --fake    # datos de prueba, sin red
+dotnet run --project src/CurrencyConverter.Fluent -- --fake    # test data, no network
 
-# Versión clásica (WPF puro)
+# Classic version (plain WPF)
 dotnet run --project src/CurrencyConverter.Classic
 dotnet run --project src/CurrencyConverter.Classic -- --fake
 ```
 
-También se puede abrir `CurrencyConverter.slnx` en Visual Studio, elegir el proyecto de inicio
-y ejecutar con F5.
+You can also open `CurrencyConverter.slnx` in Visual Studio, pick the startup project and run
+it with F5.
 
-En Windows 10 la versión Fluent funciona, pero sin Mica ni esquinas redondeadas en la ventana.
-La versión clásica se ve igual en Windows 10 y 11.
+On Windows 10 the Fluent version works, but without Mica or rounded window corners.
+The Classic version looks the same on Windows 10 and 11.
 
-> **Nota:** si Windows tiene activo *Smart App Control*, puede bloquear el ejecutable sin firmar
-> generado por `dotnet run`. Si aparece un error de control de aplicaciones, es la política del
-> sistema actuando, no un fallo del código.
+> **Note:** if *Smart App Control* is enabled in Windows, it may block the unsigned executable
+> produced by `dotnet run`. If you get an application control error, that is the system policy
+> at work, not a bug in the code.
 
-## Conceptos de WPF que muestra el proyecto
+## WPF concepts in this project
 
-- **Data binding** (`{Binding}`, `INotifyPropertyChanged` generado por `[ObservableProperty]`).
-- **Comandos** (`ICommand` / `AsyncRelayCommand` con `CanExecute`).
-- **Inyección de dependencias** en `App.xaml.cs`, con registros compartidos desde Core.
-- **DataTemplates** para mostrar las monedas en los `ComboBox`.
-- **ControlTemplates** (versión Classic) para redibujar `Button`, `TextBox` y `ComboBox`.
-- **Value converters** (`IValueConverter`) para `bool → Visibility`.
-- **ResourceDictionary**, `StaticResource` frente a `DynamicResource` y cambio de tema en caliente.
-- **Un ViewModel, dos vistas**: la separación de MVVM permite cambiar toda la UI sin tocar la lógica.
+- **Data binding** (`{Binding}`, `INotifyPropertyChanged` generated by `[ObservableProperty]`).
+- **Commands** (`ICommand` / `AsyncRelayCommand` with `CanExecute`).
+- **Dependency injection** in `App.xaml.cs`, with shared registrations from Core.
+- **DataTemplates** to display currencies in the `ComboBox`es.
+- **ControlTemplates** (Classic version) to redraw `Button`, `TextBox` and `ComboBox`.
+- **Value converters** (`IValueConverter`) for `bool → Visibility`.
+- **ResourceDictionary**, `StaticResource` vs `DynamicResource`, and switching themes at runtime.
+- **One ViewModel, two views**: MVVM's separation lets you replace the whole UI without touching the logic.
